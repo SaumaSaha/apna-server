@@ -11,7 +11,8 @@ describe("Response", () => {
       response.send();
 
       const actualResponse = write.mock.calls[0].arguments[0];
-      const expectedResponse = "HTTP/1.1 200 OK\n\n";
+      const date = new Date().toGMTString();
+      const expectedResponse = `HTTP/1.1 200 OK\r\nContent-Length: 0\r\nDate: ${date}\r\n\n`;
 
       assert.strictEqual(actualResponse, expectedResponse);
     });
@@ -24,26 +25,28 @@ describe("Response", () => {
       response.send();
 
       const actualResponse = write.mock.calls[0].arguments[0];
-      const expectedResponse = "HTTP/1.1 404 NOT_FOUND\n\n";
+      const date = new Date().toGMTString();
+      const expectedResponse = `HTTP/1.1 404 NOT_FOUND\r\nContent-Length: 0\r\nDate: ${date}\r\n\n`;
 
       assert.strictEqual(actualResponse, expectedResponse);
     });
   });
 
   describe("setContent", () => {
-    it("should set the content as empty if content is not set", (context) => {
+    it("should set the content as empty and content-length as 0 if content is not set", (context) => {
       const write = context.mock.fn();
 
       const response = new Response({ write });
       response.send();
 
       const actualResponse = write.mock.calls[0].arguments[0];
-      const expectedResponse = "HTTP/1.1 200 OK\n\n";
+      const date = new Date().toGMTString();
+      const expectedResponse = `HTTP/1.1 200 OK\r\nContent-Length: 0\r\nDate: ${date}\r\n\n`;
 
       assert.strictEqual(actualResponse, expectedResponse);
     });
 
-    it("should set the content of the response if specified", (context) => {
+    it("should set the content and the header content-length of the response if specified", (context) => {
       const write = context.mock.fn();
 
       const response = new Response({ write });
@@ -51,7 +54,8 @@ describe("Response", () => {
       response.send();
 
       const actualResponse = write.mock.calls[0].arguments[0];
-      const expectedResponse = "HTTP/1.1 200 OK\n\nhello";
+      const date = new Date().toGMTString();
+      const expectedResponse = `HTTP/1.1 200 OK\r\nContent-Length: 5\r\nDate: ${date}\r\n\nhello`;
 
       assert.strictEqual(actualResponse, expectedResponse);
     });

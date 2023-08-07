@@ -11,6 +11,13 @@ class Response {
     this.#content = "";
   }
 
+  #generateHeaders() {
+    const length = this.#content.length;
+    const date = new Date().toGMTString();
+
+    return `Content-Length: ${length}\r\nDate: ${date}`;
+  }
+
   setStatusCode(statusCode) {
     const statusMessages = {
       200: "OK",
@@ -26,9 +33,15 @@ class Response {
   }
 
   send() {
+    const header = this.#generateHeaders();
+
     this.#socket.write(
-      `HTTP/1.1 ${this.#statusCode} ${this.#statusMessage}\n\n${this.#content}`
+      `HTTP/1.1 ${this.#statusCode} ${this.#statusMessage}\r\n${header}\r\n\n${
+        this.#content
+      }`
     );
+
+    this.#socket.end();
   }
 }
 
