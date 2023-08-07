@@ -1,7 +1,6 @@
 class Response {
   #socket;
   #statusCode;
-  #statusMessage;
   #content;
   #header;
   #protocol;
@@ -10,42 +9,48 @@ class Response {
   constructor(socket, protocol = "HTTP", version = "1.1") {
     this.#socket = socket;
     this.#statusCode = 200;
-    this.#statusMessage = "OK";
     this.#content = "";
     this.#header = "";
     this.#protocol = protocol;
     this.#version = version;
   }
 
-  #addHeader(header, value) {
-    this.#header += `${header}: ${value}\r\n`;
+  #getDefaultHeader() {
+    const contentLength = this.#content.length;
+    const date = new Date().toGMTString();
+
+    return `Content-Length: ${contentLength}\r\nDate: ${date}`;
   }
 
   setStatusCode(statusCode) {
-    const statusMessages = {
-      200: "OK",
-      404: "NOT_FOUND",
-    };
-
     this.#statusCode = statusCode;
-    this.#statusMessage = statusMessages[statusCode];
   }
 
   setContent(content) {
     this.#content = content;
   }
 
-  #formatResponse() {
-    return `${this.#protocol}/${this.#version} ${this.#statusCode} ${
-      this.#statusMessage
-    }\r\n${this.#header}\n${this.#content}`;
+  #getStatusMessage() {
+    const statusMessages = {
+      200: "OK",
+      400: "BAD_REQUEST",
+      404: "NOT_FOUND",
+      405: "METHOD_NOT_ALLOWED",
+    };
+
+    return statusMessages[this.#statusCode];
+  }
+
+  #formatResponse(statusMessage, headers) {
+    return `${this.#protocol}/${this.#version} ${
+      this.#statusCode
+    } ${statusMessage}\r\n${headers}\r\n\n${this.#content}`;
   }
 
   send() {
-    this.#addHeader("Content-Length", this.#content.length);
-    this.#addHeader("Date", new Date().toGMTString());
-
-    const response = this.#formatResponse();
+    const statusMessage = this.#getStatusMessage();
+    const headers = this.#getDefaultHeader();
+    const response = this.#formatResponse(statusMessage, headers);
 
     this.#socket.write(response);
     this.#socket.end();
