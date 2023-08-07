@@ -13,7 +13,7 @@ Response:
 
     setStatusCode(code) =>  will set the status code of the response
 
-    addHeader(key, value) => will add the header to the headers in a specific format
+    <!-- addHeader(key, value) => will add the header to the headers in a specific format -->
 
     <!-- setStatusMessage(message) => set the message of the response -->
 

@@ -11,7 +11,7 @@ describe("Response", () => {
       response.send();
 
       const actualResponse = write.mock.calls[0].arguments[0];
-      const expectedResponse = "HTTP/1.1 200 OK";
+      const expectedResponse = "HTTP/1.1 200 OK\n\n";
 
       assert.strictEqual(actualResponse, expectedResponse);
     });
@@ -24,7 +24,34 @@ describe("Response", () => {
       response.send();
 
       const actualResponse = write.mock.calls[0].arguments[0];
-      const expectedResponse = "HTTP/1.1 404 NOT_FOUND";
+      const expectedResponse = "HTTP/1.1 404 NOT_FOUND\n\n";
+
+      assert.strictEqual(actualResponse, expectedResponse);
+    });
+  });
+
+  describe("setContent", () => {
+    it("should set the content as empty if content is not set", (context) => {
+      const write = context.mock.fn();
+
+      const response = new Response({ write });
+      response.send();
+
+      const actualResponse = write.mock.calls[0].arguments[0];
+      const expectedResponse = "HTTP/1.1 200 OK\n\n";
+
+      assert.strictEqual(actualResponse, expectedResponse);
+    });
+
+    it("should set the content of the response if specified", (context) => {
+      const write = context.mock.fn();
+
+      const response = new Response({ write });
+      response.setContent("hello");
+      response.send();
+
+      const actualResponse = write.mock.calls[0].arguments[0];
+      const expectedResponse = "HTTP/1.1 200 OK\n\nhello";
 
       assert.strictEqual(actualResponse, expectedResponse);
     });
