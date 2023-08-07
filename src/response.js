@@ -3,19 +3,22 @@ class Response {
   #statusCode;
   #statusMessage;
   #content;
+  #header;
+  #protocol;
+  #version;
 
-  constructor(socket) {
+  constructor(socket, protocol = "HTTP", version = "1.1") {
     this.#socket = socket;
     this.#statusCode = 200;
     this.#statusMessage = "OK";
     this.#content = "";
+    this.#header = "";
+    this.#protocol = protocol;
+    this.#version = version;
   }
 
-  #generateHeaders() {
-    const length = this.#content.length;
-    const date = new Date().toGMTString();
-
-    return `Content-Length: ${length}\r\nDate: ${date}`;
+  #addHeader(header, value) {
+    this.#header += `${header}: ${value}\r\n`;
   }
 
   setStatusCode(statusCode) {
@@ -32,15 +35,19 @@ class Response {
     this.#content = content;
   }
 
+  #formatResponse() {
+    return `${this.#protocol}/${this.#version} ${this.#statusCode} ${
+      this.#statusMessage
+    }\r\n${this.#header}\n${this.#content}`;
+  }
+
   send() {
-    const header = this.#generateHeaders();
+    this.#addHeader("Content-Length", this.#content.length);
+    this.#addHeader("Date", new Date().toGMTString());
 
-    this.#socket.write(
-      `HTTP/1.1 ${this.#statusCode} ${this.#statusMessage}\r\n${header}\r\n\n${
-        this.#content
-      }`
-    );
+    const response = this.#formatResponse();
 
+    this.#socket.write(response);
     this.#socket.end();
   }
 }
