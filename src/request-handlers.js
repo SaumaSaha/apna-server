@@ -40,20 +40,16 @@ const handlePageNotFound = (request, response) => {
 };
 
 const handleValidRequest = (request, response) => {
-  const ROUTES = {
-    "/": handleHome,
-    "/ping": handlePing,
-    "/echo": handleEcho,
-  };
+  const routes = [
+    { route: new RegExp("^/$"), handler: handleHome },
+    { route: new RegExp("^/ping$"), handler: handlePing },
+    { route: new RegExp("^/echo$"), handler: handleEcho },
+    { route: new RegExp("^/echo/.*$"), handler: handleEcho },
+    { route: new RegExp("^.*$"), handler: handlePageNotFound },
+  ];
 
-  const [route] = request.uri.match(/^\/\w*/g);
-
-  if (route in ROUTES) {
-    ROUTES[route](request, response);
-    return;
-  }
-
-  handlePageNotFound(request, response);
+  const { handler } = routes.find(({ route }) => route.test(request.uri));
+  handler(request, response);
 };
 
 const isInvalidProtocol = (protocol) => protocol !== "HTTP/1.1";
