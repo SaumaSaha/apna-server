@@ -76,7 +76,7 @@ describe("Response", () => {
 
       const actualResponse = write.mock.calls[0].arguments[0];
       const date = new Date().toGMTString();
-      const expectedResponse = `HTTP/1.1 200 OK\r\nContent-Length: 5\r\nDate: ${date}\r\n\nhello`;
+      const expectedResponse = `HTTP/1.1 200 OK\r\nContent-Length: 6\r\nDate: ${date}\r\n\nhello\n`;
 
       assert.strictEqual(actualResponse, expectedResponse);
     });

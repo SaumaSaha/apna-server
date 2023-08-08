@@ -2,7 +2,6 @@ class Response {
   #socket;
   #statusCode;
   #content;
-  #header;
   #protocol;
   #version;
 
@@ -10,7 +9,6 @@ class Response {
     this.#socket = socket;
     this.#statusCode = 200;
     this.#content = "";
-    this.#header = "";
     this.#protocol = protocol;
     this.#version = version;
   }
@@ -27,7 +25,7 @@ class Response {
   }
 
   setContent(content) {
-    this.#content = content;
+    this.#content = content + "\n";
   }
 
   #getStatusMessage() {
