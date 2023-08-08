@@ -23,11 +23,10 @@ const handlePing = (_, response) => {
 };
 
 const handleEcho = (request, response) => {
-  const [_, ...remainingPathComponents] = request.uri.match(/\/\w*/g);
+  const [_, remainingRoute] = request.uri.match(/^\/echo(.*)/);
   response.setContent("echo");
 
-  if (remainingPathComponents.length > 0)
-    response.setContent(remainingPathComponents.join(""));
+  if (remainingRoute.length > 0) response.setContent(remainingRoute);
 
   response.setStatusCode(200);
   response.send();
@@ -43,8 +42,7 @@ const handleValidRequest = (request, response) => {
   const routes = [
     { route: new RegExp("^/$"), handler: handleHome },
     { route: new RegExp("^/ping$"), handler: handlePing },
-    { route: new RegExp("^/echo$"), handler: handleEcho },
-    { route: new RegExp("^/echo/.*$"), handler: handleEcho },
+    { route: new RegExp("^/echo($|/.*)"), handler: handleEcho },
     { route: new RegExp("^.*$"), handler: handlePageNotFound },
   ];
 
